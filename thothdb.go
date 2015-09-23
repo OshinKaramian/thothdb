@@ -1,16 +1,37 @@
-// RPC Server for accessing functions written in Go for Rainman
 package main
 
 import (
-  "encoding/json"
-  "flag"
-  "log"
-  "net"
-  "net/rpc"
-  "net/rpc/jsonrpc"
+	"fmt"
+	"net"
+	"os"
 )
 
-type RPCLib int
+/* A Simple function to verify error */
+func CheckError(err error) {
+	if err != nil {
+		fmt.Println("Error: ", err)
+		os.Exit(0)
+	}
+}
 
 func main() {
+	/* Lets prepare a address at any address at port 10001*/
+	ServerAddr, err := net.ResolveUDPAddr("udp", ":10002")
+	CheckError(err)
+
+	/* Now listen at selected port */
+	ServerConn, err := net.ListenUDP("udp", ServerAddr)
+	CheckError(err)
+	defer ServerConn.Close()
+
+	buf := make([]byte, 1024)
+
+	for {
+		n, addr, err := ServerConn.ReadFromUDP(buf)
+		fmt.Println("Received ", string(buf[0:n]), " from ", addr)
+
+		if err != nil {
+			fmt.Println("Error: ", err)
+		}
+	}
 }
