@@ -1,37 +1,22 @@
 package main
 
 import (
-	"fmt"
-	"net"
-	"os"
+  //  "bufio"
+  "fmt"
+  "io"
+  "io/ioutil"
+  "os"
 )
 
-/* A Simple function to verify error */
-func CheckError(err error) {
-	if err != nil {
-		fmt.Println("Error: ", err)
-		os.Exit(0)
-	}
+func check(e error) {
+  if e != nil {
+    panic(e)
+  }
 }
 
 func main() {
-	/* Lets prepare a address at any address at port 10001*/
-	ServerAddr, err := net.ResolveUDPAddr("udp", ":10002")
-	CheckError(err)
+  dat, err := ioutil.ReadFile("db/herbed_quinoa.md")
+  check(err)
+  fmt.Print(string(dat))
 
-	/* Now listen at selected port */
-	ServerConn, err := net.ListenUDP("udp", ServerAddr)
-	CheckError(err)
-	defer ServerConn.Close()
-
-	buf := make([]byte, 1024)
-
-	for {
-		n, addr, err := ServerConn.ReadFromUDP(buf)
-		fmt.Println("Received ", string(buf[0:n]), " from ", addr)
-
-		if err != nil {
-			fmt.Println("Error: ", err)
-		}
-	}
 }
